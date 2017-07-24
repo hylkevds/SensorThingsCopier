@@ -24,7 +24,6 @@ import de.fraunhofer.iosb.ilt.sta.model.ext.EntityList;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,27 +38,25 @@ public class ObservationCopier {
      * The logger for this class.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ObservationCopier.class);
-    private final URL sourceBaseUrl;
-    private final URL targetBaseUrl;
+    SensorThingsService sourceService;
+    SensorThingsService targetService;
     private final DatastreamCombo datastreamCombo;
 
-    public ObservationCopier(URL sourceBaseUrl, URL targetBaseUrl, DatastreamCombo combo) {
-        this.sourceBaseUrl = sourceBaseUrl;
-        this.targetBaseUrl = targetBaseUrl;
+    public ObservationCopier(SensorThingsService sourceService, SensorThingsService targetService, DatastreamCombo combo) {
+        this.sourceService = sourceService;
+        this.targetService = targetService;
         this.datastreamCombo = combo;
     }
 
     public synchronized long doWork() throws URISyntaxException, ServiceFailureException, MalformedURLException {
-        LOGGER.debug("Copying {} to {}.", datastreamCombo.sourceDatastreamId, datastreamCombo.targetDatastreamId);
-        SensorThingsService sourceService = new SensorThingsService(sourceBaseUrl);
-        SensorThingsService targetService = new SensorThingsService(targetBaseUrl);
+        LOGGER.debug("Copying {} to {}.", datastreamCombo.getSourceDatastreamId(), datastreamCombo.getTargetDatastreamId());
 
-        Datastream sourceDatastream = sourceService.datastreams().find(datastreamCombo.sourceDatastreamId);
-        Datastream targetDatastream = targetService.datastreams().find(datastreamCombo.targetDatastreamId);
+        Datastream sourceDatastream = sourceService.datastreams().find(datastreamCombo.getSourceDatastreamId());
+        Datastream targetDatastream = targetService.datastreams().find(datastreamCombo.getTargetDatastreamId());
 
         EntityList<Observation> list = sourceDatastream
                 .observations().query()
-                .filter("id gt " + datastreamCombo.lastCopiedId)
+                .filter("id gt " + datastreamCombo.getLastCopiedId())
                 .orderBy("id asc")
                 .top(1000)
                 .list();
@@ -74,15 +71,15 @@ public class ObservationCopier {
             targetDatastream.observations().create(observation);
             Long targetId = observation.getId();
             LOGGER.trace("Copied Obs {}. New Id: {}.", sourceId, targetId);
-            datastreamCombo.lastCopiedId = sourceId;
+            datastreamCombo.setLastCopiedId(sourceId);
             count++;
         }
         LOGGER.info("Copied {} observations from {} to {}. LastId={}.",
                 count,
-                datastreamCombo.sourceDatastreamId,
-                datastreamCombo.targetDatastreamId,
-                datastreamCombo.lastCopiedId);
-        return datastreamCombo.lastCopiedId;
+                datastreamCombo.getSourceDatastreamId(),
+                datastreamCombo.getTargetDatastreamId(),
+                datastreamCombo.getLastCopiedId());
+        return datastreamCombo.getLastCopiedId();
     }
 
     public DatastreamCombo getDatastreamCombo() {

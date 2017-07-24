@@ -17,23 +17,66 @@
  */
 package de.fraunhofer.iosb.ilt.stc;
 
+import com.google.gson.JsonElement;
+import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
+import de.fraunhofer.iosb.ilt.configurable.Configurable;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorLong;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
+import java.util.Map;
+
 /**
  *
  * @author scf
  */
-public class DatastreamCombo {
+public class DatastreamCombo implements Configurable<Object, Object> {
 
-    public DatastreamCombo() {
+    private EditorMap<Object, Object, Map<String, Object>> editor;
+    private EditorLong editorSourceDatastreamId;
+    private EditorLong editorTargetDatastreamId;
+    private EditorLong editorLastCopiedId;
+
+    @Override
+    public void configure(JsonElement config, Object context, Object edtCtx) {
+        getConfigEditor(context, edtCtx).setConfig(config, context, edtCtx);
     }
 
-    public DatastreamCombo(long sourceDatastreamId, long targetDatastreamId, long lastCopiedId) {
-        this.sourceDatastreamId = sourceDatastreamId;
-        this.targetDatastreamId = targetDatastreamId;
-        this.lastCopiedId = lastCopiedId;
+    @Override
+    public ConfigEditor<Object, Object, ?> getConfigEditor(Object context, Object edtCtx) {
+        if (editor == null) {
+            editor = new EditorMap<>();
+
+            editorSourceDatastreamId = new EditorLong(Long.MIN_VALUE, Long.MAX_VALUE, 1, "Source ID", "The source datastream id.");
+            editor.addOption("sourceDatastreamId", editorSourceDatastreamId, false);
+
+            editorTargetDatastreamId = new EditorLong(Long.MIN_VALUE, Long.MAX_VALUE, 1, "Target ID", "The target datastream id.");
+            editor.addOption("targetDatastreamId", editorTargetDatastreamId, false);
+
+            editorLastCopiedId = new EditorLong(Long.MIN_VALUE, Long.MAX_VALUE, 0, "Last Copied", "The id of the last copied observation.");
+            editor.addOption("lastCopiedId", editorLastCopiedId, false);
+        }
+        return editor;
+
     }
 
-    public long sourceDatastreamId;
-    public long targetDatastreamId;
-    public long lastCopiedId;
+    public long getSourceDatastreamId() {
+        return editorSourceDatastreamId.getValue();
+    }
+
+    public long getTargetDatastreamId() {
+        return editorTargetDatastreamId.getValue();
+    }
+
+    public long getLastCopiedId() {
+        return editorLastCopiedId.getValue();
+    }
+
+    public void setLastCopiedId(long lastCopiedId) {
+        this.editorLastCopiedId.setValue(lastCopiedId);
+    }
+
+    @Override
+    public String toString() {
+        return editorSourceDatastreamId + " to " + editorTargetDatastreamId + " from " + getLastCopiedId();
+    }
 
 }

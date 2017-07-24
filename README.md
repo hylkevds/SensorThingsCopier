@@ -12,20 +12,6 @@ The default configuration file name is configuration.json, but a different file
 name can be passed as the first argument.
 
 ## Configuration
-The configuration file is a json file.
-```
-{
-  "sourceService" : "http://source.server:8080/SensorThingsService/v1.0/",
-  "targetService" : "http://target.server:80/SensorThingsService/v1.0/",
-  "dataStreamCombos" : [ {
-    "sourceDatastreamId" : 94,
-    "targetDatastreamId" : 405,
-    "lastCopiedId" : 0
-  }, {
-    "sourceDatastreamId" : 96,
-    "targetDatastreamId" : 407,
-    "lastCopiedId" : 0
-  } ]
-}
-```
 The config file is updated after each run, with the new IDs of the last copied observations.
+To edit the configuration file, use
+`java -cp SensorThingsCopier-0.2-jar-with-dependencies.jar de.fraunhofer.iosb.ilt.stc.ConfigGui`
