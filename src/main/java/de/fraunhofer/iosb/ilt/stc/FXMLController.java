@@ -55,7 +55,7 @@ public class FXMLController implements Initializable {
     private CheckBox toggleNoAct;
 
     private Copier copier;
-    private EditorMap<Object, Object, Map<String, Object>> configEditor;
+    private EditorMap<Map<String, Object>> configEditor;
     private FileChooser fileChooser = new FileChooser();
 
     @FXML

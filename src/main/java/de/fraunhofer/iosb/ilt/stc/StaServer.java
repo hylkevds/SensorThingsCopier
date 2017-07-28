@@ -36,24 +36,24 @@ import java.util.Map;
  */
 public class StaServer implements Configurable<Object, Object> {
 
-    private EditorMap<Object, Object, Map<String, Object>> editor;
+    private EditorMap<Map<String, Object>> editor;
     private EditorString editorBaseUrl;
     private EditorSubclass<Object, Object, AuthMethod> editorAuthMethod;
 
     @Override
     public void configure(JsonElement config, Object context, Object edtCtx) {
-        getConfigEditor(context, edtCtx).setConfig(config, context, edtCtx);
+        getConfigEditor(context, edtCtx).setConfig(config);
     }
 
     @Override
-    public ConfigEditor<Object, Object, ?> getConfigEditor(Object context, Object edtCtx) {
+    public ConfigEditor<?> getConfigEditor(Object context, Object edtCtx) {
         if (editor == null) {
             editor = new EditorMap<>();
 
             editorBaseUrl = new EditorString("http://localhost:8080/SensorThingsService/v1.0", 1, "Url", "Base url of the SensorThings API service.");
             editor.addOption("baseUrl", editorBaseUrl, false);
 
-            editorAuthMethod = new EditorSubclass(AuthMethod.class, "Auth Method", "Authentication method to use for this service.");
+            editorAuthMethod = new EditorSubclass(context, edtCtx, AuthMethod.class, "Auth Method", "Authentication method to use for this service.");
             editor.addOption("auth", editorAuthMethod, true);
         }
         return editor;

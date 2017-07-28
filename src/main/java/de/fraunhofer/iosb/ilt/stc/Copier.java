@@ -50,10 +50,10 @@ public class Copier implements Configurable<Object, Object> {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Copier.class);
 
-    private EditorMap<Object, Object, Map<String, Object>> editor;
+    private EditorMap<Map<String, Object>> editor;
     private EditorClass<Object, Object, StaServer> editorSourceService;
     private EditorClass<Object, Object, StaServer> editorTargetService;
-    private EditorList<Object, Object, DatastreamCombo, EditorClass<Object, Object, DatastreamCombo>> editorDatastreamCombos;
+    private EditorList<DatastreamCombo, EditorClass<Object, Object, DatastreamCombo>> editorDatastreamCombos;
 
     private final File configFile;
 
@@ -71,22 +71,22 @@ public class Copier implements Configurable<Object, Object> {
 
     @Override
     public void configure(JsonElement config, Object context, Object edtCtx) {
-        getConfigEditor(context, edtCtx).setConfig(config, context, edtCtx);
+        getConfigEditor(context, edtCtx).setConfig(config);
     }
 
     @Override
-    public EditorMap<Object, Object, Map<String, Object>> getConfigEditor(Object context, Object edtCtx) {
+    public EditorMap<Map<String, Object>> getConfigEditor(Object context, Object edtCtx) {
         if (editor == null) {
             editor = new EditorMap<>();
 
-            editorSourceService = new EditorClass<>(StaServer.class, "Source Service", "The service to copy observations from.");
+            editorSourceService = new EditorClass<>(context, edtCtx, StaServer.class, "Source Service", "The service to copy observations from.");
             editor.addOption("sourceService", editorSourceService, false);
 
-            editorTargetService = new EditorClass<>(StaServer.class, "Target Service", "The service to copy observations to.");
+            editorTargetService = new EditorClass<>(context, edtCtx, StaServer.class, "Target Service", "The service to copy observations to.");
             editor.addOption("targetService", editorTargetService, false);
 
             EditorFactory<EditorClass<Object, Object, DatastreamCombo>> factory = () -> {
-                return new EditorClass<>(DatastreamCombo.class);
+                return new EditorClass<>(context, edtCtx, DatastreamCombo.class);
             };
             editorDatastreamCombos = new EditorList<>(factory, "Datastreams", "The source and target datastreams to copy.");
             editor.addOption("dataStreamCombos", editorDatastreamCombos, false);

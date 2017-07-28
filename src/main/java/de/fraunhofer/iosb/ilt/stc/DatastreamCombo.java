@@ -30,18 +30,18 @@ import java.util.Map;
  */
 public class DatastreamCombo implements Configurable<Object, Object> {
 
-    private EditorMap<Object, Object, Map<String, Object>> editor;
+    private EditorMap<Map<String, Object>> editor;
     private EditorLong editorSourceDatastreamId;
     private EditorLong editorTargetDatastreamId;
     private EditorLong editorLastCopiedId;
 
     @Override
     public void configure(JsonElement config, Object context, Object edtCtx) {
-        getConfigEditor(context, edtCtx).setConfig(config, context, edtCtx);
+        getConfigEditor(context, edtCtx).setConfig(config);
     }
 
     @Override
-    public ConfigEditor<Object, Object, ?> getConfigEditor(Object context, Object edtCtx) {
+    public ConfigEditor<?> getConfigEditor(Object context, Object edtCtx) {
         if (editor == null) {
             editor = new EditorMap<>();
 
@@ -76,7 +76,7 @@ public class DatastreamCombo implements Configurable<Object, Object> {
 
     @Override
     public String toString() {
-        return editorSourceDatastreamId + " to " + editorTargetDatastreamId + " from " + getLastCopiedId();
+        return editorSourceDatastreamId.getValue() + " to " + editorTargetDatastreamId.getValue() + " from " + getLastCopiedId();
     }
 
 }
