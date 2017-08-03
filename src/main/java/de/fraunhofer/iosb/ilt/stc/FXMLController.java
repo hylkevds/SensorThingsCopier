@@ -95,7 +95,6 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void actionImport(ActionEvent event) {
-
     }
 
     @Override

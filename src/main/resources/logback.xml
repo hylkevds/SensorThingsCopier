@@ -26,11 +26,6 @@
         </encoder>
     </appender>
 
-    <logger name="de.fraunhofer.iosb.ilt.sta.parser.path" level="INFO"/>
-    <logger name="de.fraunhofer.iosb.ilt.sta.parser.query" level="INFO"/>
-    <logger name="de.fraunhofer.iosb.ilt.sta.persistence.postgres.PostgresPersistenceManager" level="INFO"/>
-    <logger name="com.querydsl" level="INFO"/>
-
     <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />

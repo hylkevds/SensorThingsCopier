@@ -61,6 +61,7 @@ public class ObservationCopier {
                 .top(1000)
                 .list();
         long count = 0;
+        long message = 1000;
         Iterator<Observation> i = list.fullIterator();
         while (i.hasNext()) {
             Observation observation = i.next();
@@ -73,6 +74,11 @@ public class ObservationCopier {
             LOGGER.trace("Copied Obs {}. New Id: {}.", sourceId, targetId);
             datastreamCombo.setLastCopiedId(sourceId);
             count++;
+            message--;
+            if (message <= 0) {
+                LOGGER.info("Copied {}...", count);
+                message = 1000;
+            }
         }
         LOGGER.info("Copied {} observations from {} to {}. LastId={}.",
                 count,
