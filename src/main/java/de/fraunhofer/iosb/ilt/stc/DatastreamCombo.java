@@ -62,8 +62,16 @@ public class DatastreamCombo implements Configurable<Object, Object> {
         return editorSourceDatastreamId.getValue();
     }
 
+    public void setSourceDatastreamId(long id) {
+        editorSourceDatastreamId.setValue(id);
+    }
+
     public long getTargetDatastreamId() {
         return editorTargetDatastreamId.getValue();
+    }
+
+    public void setTargetDatastreamId(long id) {
+        editorTargetDatastreamId.setValue(id);
     }
 
     public long getLastCopiedId() {

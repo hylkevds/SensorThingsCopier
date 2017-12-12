@@ -26,7 +26,9 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <logger name="de.fraunhofer.iosb.ilt.sta" level="INFO"/>
+
+    <root level="DEBUG">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>

@@ -27,12 +27,16 @@ import de.fraunhofer.iosb.ilt.configurable.editor.EditorClass;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorList;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
 import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
+import de.fraunhofer.iosb.ilt.sta.Utils;
+import de.fraunhofer.iosb.ilt.sta.model.Datastream;
+import de.fraunhofer.iosb.ilt.sta.model.Observation;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
@@ -94,17 +98,75 @@ public class Copier implements Configurable<Object, Object> {
         return editor;
     }
 
+    private List<DatastreamCombo> findCombos(SensorThingsService sourceService, SensorThingsService targetService) throws ServiceFailureException {
+        List<DatastreamCombo> value = new ArrayList<>();
+        for (Iterator<Datastream> it = sourceService.datastreams().query().list().fullIterator(); it.hasNext();) {
+            Datastream sourceStream = it.next();
+
+            List<Datastream> targetStreams = targetService.datastreams().query().filter("name eq '" + Utils.escapeForStringConstant(sourceStream.getName()) + "'").list().toList();
+            if (targetStreams.size() > 1) {
+                LOGGER.error("Found multiple Datastreams with name {} in target Service.", sourceStream.getName());
+                continue;
+            }
+            if (targetStreams.isEmpty()) {
+                LOGGER.debug("No Satastream with name {} found in target service.", sourceStream.getName());
+                continue;
+            }
+            Datastream targetStream = targetStreams.get(0);
+
+            Observation lastTarget = targetStream.observations()
+                    .query()
+                    .orderBy("id desc")
+                    .select("id", "phenomenonTime", "validTime")
+                    .top(1).first();
+            StringBuilder filter = new StringBuilder();
+            Observation lastSource = null;
+            if (lastTarget != null) {
+                filter.append("phenomenonTime eq ").append(lastTarget.getPhenomenonTime().toString());
+                if (lastTarget.getValidTime() != null) {
+                    filter.append(" and validTime eq ").append(lastTarget.getValidTime().toString());
+                }
+
+                lastSource = sourceStream.observations()
+                        .query()
+                        .orderBy("id desc")
+                        .select("id")
+                        .filter(filter.toString())
+                        .top(1).first();
+            }
+
+            DatastreamCombo combo = new DatastreamCombo();
+            combo.getConfigEditor(null, null);
+            combo.setSourceDatastreamId(sourceStream.getId());
+            combo.setTargetDatastreamId(targetStream.getId());
+            if (lastSource != null) {
+                combo.setLastCopiedId(lastSource.getId() + 1);
+            }
+            value.add(combo);
+            LOGGER.info("Found combo for Datastream {} as: {}", sourceStream.getName(), combo);
+        }
+        return value;
+    }
+
     public void start() throws IOException, MalformedURLException, URISyntaxException {
         LOGGER.info("Reading configuration from {}", configFile);
         String configString = FileUtils.readFileToString(configFile, "UTF-8");
         JsonElement json = new JsonParser().parse(configString);
         configure(json, null, null);
 
-        dataStreamCombos = editorDatastreamCombos.getValue();
-
         SensorThingsService sourceService = editorSourceService.getValue().createService();
         SensorThingsService targetService = editorTargetService.getValue().createService();
-        LOGGER.info("Copying from {} to {}.", sourceService, targetService);
+        LOGGER.info("Copying from {} to {}.", sourceService.getEndpoint(), targetService.getEndpoint());
+
+        dataStreamCombos = editorDatastreamCombos.getValue();
+        if (dataStreamCombos.isEmpty()) {
+            try {
+                dataStreamCombos = findCombos(sourceService, targetService);
+            } catch (ServiceFailureException ex) {
+                LOGGER.error("Failed to find datastreams.", ex);
+                return;
+            }
+        }
 
         for (DatastreamCombo combo : dataStreamCombos) {
             ObservationCopier copier = new ObservationCopier(sourceService, targetService, combo);
