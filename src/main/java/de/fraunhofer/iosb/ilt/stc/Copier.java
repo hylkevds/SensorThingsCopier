@@ -24,6 +24,7 @@ import com.google.gson.JsonParser;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
 import de.fraunhofer.iosb.ilt.configurable.EditorFactory;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorClass;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorList;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
 import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
@@ -57,12 +58,13 @@ public class Copier implements Configurable<Object, Object> {
     private EditorMap<Map<String, Object>> editor;
     private EditorClass<Object, Object, StaServer> editorSourceService;
     private EditorClass<Object, Object, StaServer> editorTargetService;
+    private EditorInt editorDelayTime;
     private EditorList<DatastreamCombo, EditorClass<Object, Object, DatastreamCombo>> editorDatastreamCombos;
 
     private final File configFile;
 
     public List<DatastreamCombo> dataStreamCombos;
-
+    private long delay = 1;
     private List<ObservationCopier> copiers = new ArrayList<>();
 
     public Copier() {
@@ -76,6 +78,7 @@ public class Copier implements Configurable<Object, Object> {
     @Override
     public void configure(JsonElement config, Object context, Object edtCtx) {
         getConfigEditor(context, edtCtx).setConfig(config);
+        delay = editorDelayTime.getValue();
     }
 
     @Override
@@ -94,6 +97,9 @@ public class Copier implements Configurable<Object, Object> {
             };
             editorDatastreamCombos = new EditorList<>(factory, "Datastreams", "The source and target datastreams to copy.");
             editor.addOption("dataStreamCombos", editorDatastreamCombos, false);
+
+            editorDelayTime = new EditorInt(0, 100000, 1, 1, "Delay", "The number of milliseconds to wait after each inserted observation.");
+            editor.addOption("delay", editorDelayTime, true);
         }
         return editor;
     }
@@ -170,6 +176,7 @@ public class Copier implements Configurable<Object, Object> {
 
         for (DatastreamCombo combo : dataStreamCombos) {
             ObservationCopier copier = new ObservationCopier(sourceService, targetService, combo);
+            copier.setDelay(delay);
             copiers.add(copier);
         }
         LOGGER.info("Found {} Datastreams to copy.", copiers.size());

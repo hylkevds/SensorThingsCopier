@@ -41,6 +41,10 @@ public class ObservationCopier {
     SensorThingsService sourceService;
     SensorThingsService targetService;
     private final DatastreamCombo datastreamCombo;
+    /**
+     * The time to sleep after inserting a new Observation.
+     */
+    private long delay = 1;
 
     public ObservationCopier(SensorThingsService sourceService, SensorThingsService targetService, DatastreamCombo combo) {
         this.sourceService = sourceService;
@@ -79,6 +83,7 @@ public class ObservationCopier {
                 LOGGER.info("Copied {}...", count);
                 message = 1000;
             }
+            maybeSleep();
         }
         LOGGER.info("Copied {} observations from {} to {}. LastId={}.",
                 count,
@@ -88,8 +93,36 @@ public class ObservationCopier {
         return datastreamCombo.getLastCopiedId();
     }
 
+    private void maybeSleep() {
+        if (delay > 0) {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException ex) {
+                LOGGER.warn("Rude wakeop.", ex);
+            }
+        }
+    }
+
     public DatastreamCombo getDatastreamCombo() {
         return datastreamCombo;
+    }
+
+    /**
+     * The time to sleep after inserting a new Observation.
+     *
+     * @return the delay
+     */
+    public long getDelay() {
+        return delay;
+    }
+
+    /**
+     * The time to sleep after inserting a new Observation.
+     *
+     * @param delay the delay to set
+     */
+    public void setDelay(long delay) {
+        this.delay = delay;
     }
 
 }
