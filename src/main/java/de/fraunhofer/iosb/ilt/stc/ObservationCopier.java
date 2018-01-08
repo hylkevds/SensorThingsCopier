@@ -45,6 +45,10 @@ public class ObservationCopier {
      * The time to sleep after inserting a new Observation.
      */
     private long delay = 1;
+    /**
+     * The number of observations to fetch per request.
+     */
+    private int perRequest = 1000;
 
     public ObservationCopier(SensorThingsService sourceService, SensorThingsService targetService, DatastreamCombo combo) {
         this.sourceService = sourceService;
@@ -123,6 +127,24 @@ public class ObservationCopier {
      */
     public void setDelay(long delay) {
         this.delay = delay;
+    }
+
+    /**
+     * The number of observations to fetch per request.
+     *
+     * @return the perRequest
+     */
+    public int getPerRequest() {
+        return perRequest;
+    }
+
+    /**
+     * The number of observations to fetch per request.
+     *
+     * @param perRequest the perRequest to set
+     */
+    public void setPerRequest(int perRequest) {
+        this.perRequest = perRequest;
     }
 
 }

@@ -59,12 +59,17 @@ public class Copier implements Configurable<Object, Object> {
     private EditorClass<Object, Object, StaServer> editorSourceService;
     private EditorClass<Object, Object, StaServer> editorTargetService;
     private EditorInt editorDelayTime;
+    private EditorInt editorPerRequest;
     private EditorList<DatastreamCombo, EditorClass<Object, Object, DatastreamCombo>> editorDatastreamCombos;
 
     private final File configFile;
 
     public List<DatastreamCombo> dataStreamCombos;
     private long delay = 1;
+    /**
+     * The number of observations to fetch per request.
+     */
+    private int perRequest = 1000;
     private List<ObservationCopier> copiers = new ArrayList<>();
 
     public Copier() {
@@ -79,6 +84,7 @@ public class Copier implements Configurable<Object, Object> {
     public void configure(JsonElement config, Object context, Object edtCtx) {
         getConfigEditor(context, edtCtx).setConfig(config);
         delay = editorDelayTime.getValue();
+        perRequest = editorPerRequest.getValue();
     }
 
     @Override
@@ -100,6 +106,9 @@ public class Copier implements Configurable<Object, Object> {
 
             editorDelayTime = new EditorInt(0, 100000, 1, 1, "Delay", "The number of milliseconds to wait after each inserted observation.");
             editor.addOption("delay", editorDelayTime, true);
+
+            editorPerRequest = new EditorInt(0, 100000, 1, 1000, "Per Request", "The number of Observations to request at the same time.");
+            editor.addOption("perRequest", editorPerRequest, true);
         }
         return editor;
     }
@@ -177,6 +186,7 @@ public class Copier implements Configurable<Object, Object> {
         for (DatastreamCombo combo : dataStreamCombos) {
             ObservationCopier copier = new ObservationCopier(sourceService, targetService, combo);
             copier.setDelay(delay);
+            copier.setPerRequest(perRequest);
             copiers.add(copier);
         }
         LOGGER.info("Found {} Datastreams to copy.", copiers.size());
