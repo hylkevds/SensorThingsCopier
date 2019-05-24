@@ -23,6 +23,7 @@ import de.fraunhofer.iosb.ilt.sta.model.Observation;
 import de.fraunhofer.iosb.ilt.sta.model.ext.EntityList;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import org.slf4j.Logger;
@@ -75,7 +76,7 @@ public class ObservationCopier {
             Observation observation = i.next();
             Long sourceId = (Long) observation.getId().getValue();
             observation.setService(null);
-            observation.setSelfLink((String) null);
+            observation.setSelfLink((URI) null);
             observation.setId(null);
             targetDatastream.observations().create(observation);
             Long targetId = (Long) observation.getId().getValue();
