@@ -73,12 +73,12 @@ public class ObservationCopier {
         Iterator<Observation> i = list.fullIterator();
         while (i.hasNext()) {
             Observation observation = i.next();
-            Long sourceId = observation.getId();
+            Long sourceId = (Long) observation.getId().getValue();
             observation.setService(null);
-            observation.setSelfLink(null);
+            observation.setSelfLink((String) null);
             observation.setId(null);
             targetDatastream.observations().create(observation);
-            Long targetId = observation.getId();
+            Long targetId = (Long) observation.getId().getValue();
             LOGGER.trace("Copied Obs {}. New Id: {}.", sourceId, targetId);
             datastreamCombo.setLastCopiedId(sourceId);
             count++;

@@ -152,10 +152,10 @@ public class Copier implements Configurable<Object, Object> {
 
             DatastreamCombo combo = new DatastreamCombo();
             combo.getConfigEditor(null, null);
-            combo.setSourceDatastreamId(sourceStream.getId());
-            combo.setTargetDatastreamId(targetStream.getId());
+            combo.setSourceDatastreamId((Long) sourceStream.getId().getValue());
+            combo.setTargetDatastreamId((Long) targetStream.getId().getValue());
             if (lastSource != null) {
-                combo.setLastCopiedId(lastSource.getId() + 1);
+                combo.setLastCopiedId((Long) lastSource.getId().getValue() + 1);
             }
             value.add(combo);
             LOGGER.info("Found combo for Datastream {} as: {}", sourceStream.getName(), combo);

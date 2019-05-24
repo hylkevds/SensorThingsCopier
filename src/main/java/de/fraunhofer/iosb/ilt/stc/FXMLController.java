@@ -101,6 +101,6 @@ public class FXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         copier = new Copier();
         configEditor = copier.getConfigEditor(null, null);
-        paneConfig.setContent(configEditor.getNode());
+        paneConfig.setContent(configEditor.getGuiFactoryFx().getNode());
     }
 }
