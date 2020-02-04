@@ -1,0 +1,17 @@
+{
+  "dataStreamCombos": [],
+  "targetService": {
+    "baseUrl": "${target_server}",
+    "auth": {
+      "className": "de.fraunhofer.iosb.ilt.stc.auth.AuthBasic",
+      "classConfig": {
+        "password": "${target_password}",
+        "username": "${target_username}"
+      }
+    }
+  },
+  "delay": 10,
+  "sourceService": {
+    "baseUrl": "${source_server}"
+  }
+}

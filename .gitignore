@@ -17,4 +17,3 @@ target/
 hs_err_pid*
 logs
 
-*.json
