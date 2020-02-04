@@ -14,4 +14,4 @@ name can be passed as the first argument.
 ## Configuration
 The config file is updated after each run, with the new IDs of the last copied observations.
 To edit the configuration file, use
-`java -cp SensorThingsCopier-0.2-jar-with-dependencies.jar de.fraunhofer.iosb.ilt.stc.ConfigGui`
+`java -cp SensorThingsCopier-0.4-jar-with-dependencies.jar de.fraunhofer.iosb.ilt.stc.ConfigGui`

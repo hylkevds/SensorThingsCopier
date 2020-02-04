@@ -10,13 +10,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <mainClass>de.fraunhofer.iosb.ilt.stc.Copier</mainClass>
 
+        <mainClass>de.fraunhofer.iosb.ilt.stc.Copier</mainClass>
+        <docker-image-name>fraunhoferiosb/frost-copier</docker-image-name>
 
         <bintray.subject>fraunhoferiosb</bintray.subject>
         <bintray.repo>Maven</bintray.repo>
         <bintray.package>SensorThingsCopier</bintray.package>
 
+        <dockerfile-maven-plugin.version>1.4.10</dockerfile-maven-plugin.version>
+        <javax-activation.version>1.1.1</javax-activation.version>
         <openjfx.version>11.0.2</openjfx.version>
     </properties>
 
@@ -49,6 +52,25 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>${dockerfile-maven-plugin.version}</version>
+                <configuration>
+                    <repository>${docker-image-name}</repository>
+                    <buildArgs>
+                        <JAR_FILE>${project.build.finalName}-jar-with-dependencies.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+                <dependencies>
+                    <!-- Java 9 support -->
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>${javax-activation.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
