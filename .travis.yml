@@ -9,10 +9,20 @@ branches:
 
 after_success:
   - test "${TRAVIS_PULL_REQUEST}" == "false" && test "${TRAVIS_TAG}" != "" && mvn deploy --settings travis-settings.xml
-  - mvn dockerfile:build
-  - mvn dockerfile:tag@tag-version
-  - mvn dockerfile:push@push-latest -Ddockerfile.useMavenSettingsForAuth=true --settings travis-settings.xml
-  - mvn dockerfile:push@push-version -Ddockerfile.useMavenSettingsForAuth=true --settings travis-settings.xml
+
+jobs:
+  include:
+    - stage: build
+      name: Build
+      script:
+        - mvn install
+        - mvn dockerfile:build
+      after_success:
+        - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+        - mvn dockerfile:tag@tag-version
+        - mvn dockerfile:tag@tag-latest
+        - mvn dockerfile:push@push-version
+        - mvn dockerfile:push@push-latest
 
 cache:
   directories:
@@ -28,6 +38,6 @@ env:
     # travis encrypt BINTRAY_API_KEY=[api key]
     - secure: hItEp2hUUg2IDEHwTk6QldlK5uVEucw4SutfGKqYz8B/qsGLGpbMgNYXc2w0A6I0Ci9Ey6ZRMuNv2ZLNaR6J+q/kAFIGqmos5cxAbKwfv2KBkJFt/N6zyEMIbAv9e4LFXJzjOTnokx3AhN6mWM1njfUMTV17kS+i6Lf84T6GVjfuLnJKRRQqrghxTkuZJSxBkpZPKSltNif3r79YqakA3r+piyNL1+LpT6F534I9g4FlFx5BZbxmX6W1KajmSTK7uYljeoMR8Zul5Q0bmoPc/wG2E7FBPBmNRvPT5tBeVTECsDExRY1w5u244eilo99dfykmFDr7zcAJtb6qogTyL0jR89cBQ36gxsRRXkXtzLb0MXr/rtp9d4Z6mz6nfFXi6OYzHo711UP7Jg8I8UcRKbRKF8lSSTwKHhqIBHp2itLJL1tdZew+qBnB+D1q3SMLnXN+GhzLnJX32sLKVLUMWIfSTCMjsgmpRvgOSfdunSD17+YwtEssOdlJxoXCugpECyFG4cEbYgevsK5n0ySzSa5qyKWB72N0zlMAXJ3vLxfjUo/C7AQdDrYVbKDbv/UKsPqfxbh4iPeU437G5H9PZh3ufI9c8XaiVPXTMX64dT/NcL6FaO31/6Lpl1dAL9yZK80/hbdAGbqIEnn2XtVmR/dNCXV7vGrWEF5izBzCZCw=
     # travis encrypt DOCKER_USERNAME=[username]
-    - secure: "JoSPmPtjm7VI61u1ZLe6Vg8NXhQ1CgAJOnF4kICCxTRbHeN/0IrSbVFFemgkcGBgVc/1QfNdWLjXDU9kf4InbM3mVLfE6pDAa4sfTNHyHXOVfYnWepJTPefVjDwingHGarOyME4S/a6eJp3xFMMmXAvifxGPgtwbajLUOoCInCgqpm1iX1oYokNvvNLDkHJ1qVQ3bLT8ToZZJdrp0nVjrg5SqBZuG4ZaHLAGL277VkX6k3f1YaEIzFrioUHwJQ+k2A3j3scY3/zaovnnDLRy5rPAFIDuAOn9zV4fXUymhr6i2BKLvAeZ6YoyX+bKaXCCkSJF9ynruEHcvshGdujNS6zl/rwF68fjeFUZghnci7Ot5kE5w8XhcdFXMdzdNbhj5G1xoVgLyL5OB0xYPZ5UDx2pK3D7vF4uCaipPKQfaI4Hg9PC3norOoa7IbotmjyJdLcb1Wx1S0qoiWQD/fv2hoewniVWncJxvf4cYJMQFqmfwsI0LDV0xW2bpqpCPa86aHTQs6MEKKH2XfDq8PyVWVRczIWbevii+8ivjra90xMjercOTtw5MgPK70eWord3CYHiEMQd9z4TRXlhY0IEgWTdWzuUBY8qsAnJUhFLpMFd6rmVZaRKmZtsF7uonHTkqoqcItxNudBqa1a2KNsqcKWv7Pfn3998X6s16HYzzuw="
+    - secure: JoSPmPtjm7VI61u1ZLe6Vg8NXhQ1CgAJOnF4kICCxTRbHeN/0IrSbVFFemgkcGBgVc/1QfNdWLjXDU9kf4InbM3mVLfE6pDAa4sfTNHyHXOVfYnWepJTPefVjDwingHGarOyME4S/a6eJp3xFMMmXAvifxGPgtwbajLUOoCInCgqpm1iX1oYokNvvNLDkHJ1qVQ3bLT8ToZZJdrp0nVjrg5SqBZuG4ZaHLAGL277VkX6k3f1YaEIzFrioUHwJQ+k2A3j3scY3/zaovnnDLRy5rPAFIDuAOn9zV4fXUymhr6i2BKLvAeZ6YoyX+bKaXCCkSJF9ynruEHcvshGdujNS6zl/rwF68fjeFUZghnci7Ot5kE5w8XhcdFXMdzdNbhj5G1xoVgLyL5OB0xYPZ5UDx2pK3D7vF4uCaipPKQfaI4Hg9PC3norOoa7IbotmjyJdLcb1Wx1S0qoiWQD/fv2hoewniVWncJxvf4cYJMQFqmfwsI0LDV0xW2bpqpCPa86aHTQs6MEKKH2XfDq8PyVWVRczIWbevii+8ivjra90xMjercOTtw5MgPK70eWord3CYHiEMQd9z4TRXlhY0IEgWTdWzuUBY8qsAnJUhFLpMFd6rmVZaRKmZtsF7uonHTkqoqcItxNudBqa1a2KNsqcKWv7Pfn3998X6s16HYzzuw=
     # travis encrypt DOCKER_PASSWORD=[password]
-    - secure: "GAkNfhy6cbxrwr4/SfLtmzcQ0fDHL0nqhyFjdJqOIahirR9NkULFjXjwy9P0S5EyVrg66uVo1pAg23ayEgogI+QJaGO3G3n52Iug5VSiPBb0GthxBBs8aQHT3P08h4KQ8GFBSlhvz6yOjMDIPoc78CFevErxOVepPJM04Y0p+tLvsIJ6bn2HtbeLRgx2voQUuWHMNpyAwvY/yT0ch3ZyndUSAZMk00a7x1DzcTMhixIYZwDI6BhzpS+McRTVzGZPiVtoKQYqOgNWQ+43R/SAZajJVT6YOdHcXjEVLctNy/Omv7TwYGGlf3lWtU2Xwogn/SwCttIkbejFfYc6J42HaKulIj95wvVhReoWxzvkHhyYkZ2CR2co2KlpTMT4umG4iE+Rvr0sksChG/ETy5KGcxaerpjTxHkCjCmlERlTJapYZ/NWh0u0bckAEnkOMjgbZkJPMfYLEk0yLjDbAGEAgYkiR6ySyh4oH5ZBsYf5kPBi9NkCE8UBjejpUKgeqr0QmXRxb+uUTdZYkU2FSil6lMvposF1bFt2hPwSh4H3iBbL9698OAihUD3t9fTN3b/lWgXwb2J/O2ykc4tA8dgcyxX5wgMjVjBdvGzcywspZLFWd/1HxHIfE8x/ET1MHnm/0S50Z0uEZeB015801/ispsszG3PTuwvv+d3lvU51Muw="
+    - secure: GAkNfhy6cbxrwr4/SfLtmzcQ0fDHL0nqhyFjdJqOIahirR9NkULFjXjwy9P0S5EyVrg66uVo1pAg23ayEgogI+QJaGO3G3n52Iug5VSiPBb0GthxBBs8aQHT3P08h4KQ8GFBSlhvz6yOjMDIPoc78CFevErxOVepPJM04Y0p+tLvsIJ6bn2HtbeLRgx2voQUuWHMNpyAwvY/yT0ch3ZyndUSAZMk00a7x1DzcTMhixIYZwDI6BhzpS+McRTVzGZPiVtoKQYqOgNWQ+43R/SAZajJVT6YOdHcXjEVLctNy/Omv7TwYGGlf3lWtU2Xwogn/SwCttIkbejFfYc6J42HaKulIj95wvVhReoWxzvkHhyYkZ2CR2co2KlpTMT4umG4iE+Rvr0sksChG/ETy5KGcxaerpjTxHkCjCmlERlTJapYZ/NWh0u0bckAEnkOMjgbZkJPMfYLEk0yLjDbAGEAgYkiR6ySyh4oH5ZBsYf5kPBi9NkCE8UBjejpUKgeqr0QmXRxb+uUTdZYkU2FSil6lMvposF1bFt2hPwSh4H3iBbL9698OAihUD3t9fTN3b/lWgXwb2J/O2ykc4tA8dgcyxX5wgMjVjBdvGzcywspZLFWd/1HxHIfE8x/ET1MHnm/0S50Z0uEZeB015801/ispsszG3PTuwvv+d3lvU51Muw=
