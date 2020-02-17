@@ -64,8 +64,8 @@ public class FXMLController implements Initializable {
         File file = fileChooser.showOpenDialog(paneConfig.getScene().getWindow());
         try {
             String config = FileUtils.readFileToString(file, "UTF-8");
-            JsonElement json = new JsonParser().parse(config);
-            copier.configure(json, null, null);
+            JsonElement json = JsonParser.parseString(config);
+            copier.configure(json, null, null, null);
         } catch (IOException ex) {
             LOGGER.error("Failed to read file", ex);
             Alert alert = new Alert(Alert.AlertType.ERROR);

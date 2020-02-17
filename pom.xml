@@ -18,8 +18,15 @@
         <bintray.repo>Maven</bintray.repo>
         <bintray.package>SensorThingsCopier</bintray.package>
 
+        <commons-io.version>2.6</commons-io.version>
+        <Configurable.version>0.22</Configurable.version>
         <dockerfile-maven-plugin.version>1.4.13</dockerfile-maven-plugin.version>
+        <FROST-Client.version>0.28</FROST-Client.version>
+        <hamcrest.version>2.2</hamcrest.version>
         <javax-activation.version>1.1.1</javax-activation.version>
+        <joda-time.version>2.10.5</joda-time.version>
+        <junit.version>4.13</junit.version>
+        <logback.version>1.2.3</logback.version>
         <openjfx.version>13.0.2</openjfx.version>
     </properties>
 
@@ -85,41 +92,29 @@
 
     <dependencies>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>de.fraunhofer.iosb.ilt</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>FROST-Client</artifactId>
-            <version>0.28</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <version>2.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.10.5</version>
+            <version>${FROST-Client.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>Configurable</artifactId>
-            <version>0.9</version>
+            <version>${Configurable.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
+            <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -130,6 +125,18 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${openjfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>${hamcrest.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

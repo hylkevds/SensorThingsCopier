@@ -20,6 +20,7 @@ package de.fraunhofer.iosb.ilt.stc;
 import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorString;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass;
@@ -41,7 +42,7 @@ public class StaServer implements Configurable<Object, Object> {
     private EditorSubclass<Object, Object, AuthMethod> editorAuthMethod;
 
     @Override
-    public void configure(JsonElement config, Object context, Object edtCtx) {
+    public void configure(JsonElement config, Object context, Object edtCtx, ConfigEditor<?> configEditor) {
         getConfigEditor(context, edtCtx).setConfig(config);
     }
 
@@ -59,7 +60,7 @@ public class StaServer implements Configurable<Object, Object> {
         return editor;
     }
 
-    public SensorThingsService createService() throws MalformedURLException, URISyntaxException {
+    public SensorThingsService createService() throws MalformedURLException, URISyntaxException, ConfigurationException {
         SensorThingsService service = new SensorThingsService(new URL(editorBaseUrl.getValue()));
         AuthMethod auth = editorAuthMethod.getValue();
         if (auth != null) {

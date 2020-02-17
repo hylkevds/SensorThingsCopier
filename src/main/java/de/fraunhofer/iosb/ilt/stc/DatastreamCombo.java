@@ -36,7 +36,7 @@ public class DatastreamCombo implements Configurable<Object, Object> {
     private EditorLong editorLastCopiedId;
 
     @Override
-    public void configure(JsonElement config, Object context, Object edtCtx) {
+    public void configure(JsonElement config, Object context, Object edtCtx, ConfigEditor<?> configEditor) {
         getConfigEditor(context, edtCtx).setConfig(config);
     }
 

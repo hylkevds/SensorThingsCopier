@@ -21,7 +21,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.EditorFactory;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorClass;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
@@ -81,7 +83,7 @@ public class Copier implements Configurable<Object, Object> {
     }
 
     @Override
-    public void configure(JsonElement config, Object context, Object edtCtx) {
+    public void configure(JsonElement config, Object context, Object edtCtx, ConfigEditor<?> configEditor) {
         getConfigEditor(context, edtCtx).setConfig(config);
         delay = editorDelayTime.getValue();
         perRequest = editorPerRequest.getValue();
@@ -163,11 +165,11 @@ public class Copier implements Configurable<Object, Object> {
         return value;
     }
 
-    public void start() throws IOException, MalformedURLException, URISyntaxException {
+    public void start() throws IOException, MalformedURLException, URISyntaxException, ConfigurationException {
         LOGGER.info("Reading configuration from {}", configFile);
         String configString = FileUtils.readFileToString(configFile, "UTF-8");
-        JsonElement json = new JsonParser().parse(configString);
-        configure(json, null, null);
+        JsonElement json = JsonParser.parseString(configString);
+        configure(json, null, null, null);
 
         SensorThingsService sourceService = editorSourceService.getValue().createService();
         SensorThingsService targetService = editorTargetService.getValue().createService();
@@ -211,7 +213,7 @@ public class Copier implements Configurable<Object, Object> {
      * @throws java.net.URISyntaxException
      * @throws java.net.MalformedURLException
      */
-    public static void main(String[] args) throws ServiceFailureException, URISyntaxException, MalformedURLException, IOException {
+    public static void main(String[] args) throws ServiceFailureException, URISyntaxException, MalformedURLException, IOException, ConfigurationException {
         String configFileName = "configuration.json";
         if (args.length > 0) {
             configFileName = args[0];
