@@ -92,7 +92,7 @@
         <dependency>
             <groupId>de.fraunhofer.iosb.ilt</groupId>
             <artifactId>FROST-Client</artifactId>
-            <version>0.26</version>
+            <version>0.28</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
