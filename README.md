@@ -1,4 +1,4 @@
-# SensorThingsCopier [![Build Status](https://api.travis-ci.com/FraunhoferIOSB/SensorThingsCopier.svg?branch=master)](https://travis-ci.com/FraunhoferIOSB/SensorThingsCopier)
+# SensorThingsCopier [![Build Status](https://github.com/FraunhoferIOSB/SensorThingsCopier/workflows/Maven%20Build/badge.svg)](https://github.com/FraunhoferIOSB/SensorThingsCopier/actions)
 A simple program that copies observations from one OGC SensorThings API compatible
 service/Datastream to another service/Datastream.
 
