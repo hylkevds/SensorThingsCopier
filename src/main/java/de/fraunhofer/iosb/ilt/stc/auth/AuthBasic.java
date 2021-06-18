@@ -72,7 +72,7 @@ public class AuthBasic implements AuthMethod {
         CloseableHttpClient httpclient = HttpClients.custom()
                 .setDefaultCredentialsProvider(credsProvider)
                 .build();
-        service.setClient(httpclient);
+        service.setHttpClient(httpclient);
     }
 
 }
